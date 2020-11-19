@@ -19,16 +19,16 @@ router.post('/register', async(req, res, next) => {
 
         res.send(savedUser);
     }
-    catch (err) {
-        if(err.isJoi === true) {
-            err.status = 422;
+    catch (error) {
+        if(error.isJoi === true) {
+            error.status = 422;
         }
-        next(err);
+        next(error);
     }
 });
 
 router.post('/login', async(req, res, next) => {
-    res.send('login route');
+    
 });
 
 router.post('/refresh-token', async(req, res, next) => {

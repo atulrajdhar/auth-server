@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const getBcryptHash = require('security');
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
@@ -11,6 +12,17 @@ const UserSchema = new Schema({
     password: {
         type: String,
         required: true
+    }
+});
+
+UserSchema.pre('save', async function (next) {
+    try {        
+        const hashedPassword = await getBcryptHash(this.password, 10);
+        this.password = hashedPassword;
+        next();
+    }
+    catch(error) {
+        next(error);
     }
 });
 

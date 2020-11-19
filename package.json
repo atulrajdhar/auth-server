@@ -22,9 +22,14 @@
     "express": "^4.17.1",
     "http-errors": "^1.8.0",
     "mongoose": "^5.10.15",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "security": "file:../helpers/security"
   },
   "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "mocha": "^8.2.1",
+    "mongodb-memory-server": "^6.9.2",
     "nodemon": "^2.0.6"
   }
 }
