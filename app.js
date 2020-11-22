@@ -20,11 +20,13 @@ app.use(async(req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-    res.status(err.status || 500)
+    const status = err.status || 500;
+    console.error(err);
+    res.status(status)
     res.send({
         error: {
-            status: err.status || 500,
-            message: err.message
+            status: status,
+            message: status === 500 ? "Internal Server Error" : err.message
         }
     })
 });
