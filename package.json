@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon server.js",
-    "test": "mocha --require babel-polyfill --require @babel/register --recursive --exit"
+    "test": "mocha --recursive --exit --timeout 10000",
+    "test:register": "mocha --watch ./controllers/auth.js --watch ./test/auth/register.js --timeout 1000000"
   },
   "keywords": [
     "authroization",

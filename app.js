@@ -3,7 +3,7 @@ const express = require('express');
 const morgan = require('morgan');
 const createError = require('http-errors');
 
-const auth = require('./Routes/auth');
+const auth = require('./routes/auth');
 
 const app = express();
 app.use(express.json());
@@ -21,7 +21,7 @@ app.use(async(req, res, next) => {
 
 app.use((err, req, res, next) => {
     const status = err.status || 500;
-    console.error(err);
+    //console.error(err);
     res.status(status)
     res.send({
         error: {

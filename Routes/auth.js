@@ -1,43 +1,14 @@
 const express = require('express');
-const User = require('../Models/user');
-const { authSchema } = require('../helpers/validation_schema');
-const { signAccessToken } = require('../helpers/jwt_helper')
-const createError = require('http-errors');
+const AuthController = require('../controllers/auth');
 
 const router = express.Router();
 
-router.post('/register', async(req, res, next) => {
-    const { email, password } = req.body;
-    try {
-        const result = await authSchema.validateAsync(req.body);
-        const userAlreadyExist = await User.findOne({"email": result.email});
-        if(userAlreadyExist) {
-            throw createError.Conflict(`${result.email} is already been registered`);
-        }
+router.post('/register', AuthController.register);
 
-        const user = new User(result);
-        // const savedUser = await user.save();                
-        const accessToken = await signAccessToken(user.id);
-        res.send({ accessToken });
-    }
-    catch (error) {
-        if(error.isJoi === true) {
-            error.status = 422;
-        }
-        next(error);
-    }
-});
+router.post('/login', AuthController.login);
 
-router.post('/login', async(req, res, next) => {
-    
-});
+//router.post('/refresh-token', AuthController.refresh_token);
 
-router.post('/refresh-token', async(req, res, next) => {
-    res.send('refresh-token route');
-});
-
-router.delete('/logout', async(req, res, next) => {
-    res.send('logout route');
-});
+//router.delete('/logout', AuthController.logout);
 
 module.exports = router;
