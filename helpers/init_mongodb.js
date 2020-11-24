@@ -3,7 +3,11 @@ require('dotenv-expand')(dotenv.config());
 
 const mongoose = require('mongoose');
 
-function init_mongodb () {            
+const { MongoMemoryServer } = require('mongodb-memory-server');
+
+let mongoServer;
+
+async function init_mongodb () {            
 
     mongoose.connection.on('connected', () => {
         console.log('mongoose connected to db');
@@ -18,8 +22,14 @@ function init_mongodb () {
         process.exit(0);
     });
 
+
+    let url = process.env.DB_URI;    
+    if(process.env.NODE_ENV === "test") {
+        mongoServer = new MongoMemoryServer();
+        url = await mongoServer.getUri();        
+    }
     return new Promise ((resolve, reject) => {
-        mongoose.connect(process.env.DB_URI, {
+        mongoose.connect(url, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useCreateIndex: true,
@@ -34,8 +44,27 @@ function init_mongodb () {
     });
 }
 
-function close () {
-    return mongoose.disconnect();
+async function close () {
+    if(process.env.DB_URI === "test") {
+        await mongoose.connection.dropDatabase();
+        await mongoose.connection.close();
+        await mongoServer.stop();
+    }
+    else {
+        await mongoose.connection.close();
+    }
+    return await mongoose.disconnect();
 }
 
-module.exports = { init_mongodb, close };
+async function cleanup () {
+    if(process.env.DB_URI === "test") {
+        const collections = await mongoose.connection.collections;
+            return Promise.all(
+                collections
+                    .map(({name}) => name)
+                    .map(collection => mongoose.connection.collection(collection).drop())
+            );
+        }
+}
+
+module.exports = { init_mongodb, close, cleanup };

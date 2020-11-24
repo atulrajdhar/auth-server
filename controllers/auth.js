@@ -14,8 +14,8 @@ module.exports = {
             }
     
             const user = new User(result);
-            // const savedUser = await user.save();                
-            const accessToken = await signAccessToken(user.id);
+            const savedUser = await user.save();
+            const accessToken = await signAccessToken(savedUser.id);
             res.send({ accessToken });
         }
         catch (error) {

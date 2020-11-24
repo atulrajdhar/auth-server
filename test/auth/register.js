@@ -6,7 +6,8 @@ const chai = require('chai');
 const chaiHttp = require( 'chai-http');
 
 const mongoose = require('mongoose');
-const { MongoMemoryServer} = require('mongodb-memory-server');
+
+const { init_mongodb, close, cleanup } = require('../../helpers/init_mongodb');
 
 const auth = require('../../controllers/auth');
 const User = require('../../models/user');
@@ -16,22 +17,19 @@ const app = require('../../app');
 chai.should();
 chai.use(chaiHttp);
 
-let mongoServer;
+let mongoMemoryServer;
 
 describe('auth register', () => {    
     before( async () => {
-        mongoServer = new MongoMemoryServer();
-        const mongoUri = await mongoServer.getUri();
-        await mongoose.connect(mongoUri, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-            useCreateIndex: true
-        });        
+        await init_mongodb();
     });
 
-    after( async () => {
-        await mongoose.disconnect();
-        await mongoServer.stop();                  
+    after( async () => {        
+        await close();
+    });
+
+    afterEach ( async () => {
+        await cleanup();
     });
 
     it('should verify all required inputs are specified', (done) => {
@@ -103,22 +101,24 @@ describe('auth register', () => {
         done();
     });
     //it('should check if password and confirm password matches');
-    it('should fail when username already exists', (done) => {
-        let user = {
+    it('should fail when username already exists', async () => {
+        let userData = {
             "email": "abc@xyz.com",
             "password": "abcdef"
-        };        
-            chai.request(app)
+        };
+        const user = new User(userData);
+        await user.save();
+
+        chai.request(app)
             .post('/auth/register')
-            .send(user)
+            .send(userData)
             .end((err, res) => {
-                const body = res.body;                
-                res.should.have.status(422);
+                const body = res.body;
+                res.should.have.status(409);
                 body.should.be.a('object');
                 body.should.have.property('error').property('status').eq(res.status);
-                body.should.have.property('error').property('message');
-            });        
-        done();       
+                body.should.have.property('error').property('message');                
+            });       
     });
     it('should use bcryptjs to store password');
     it('should register new user');
