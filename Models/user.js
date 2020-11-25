@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { getBcryptHash } = require('security');
+const { getBcryptHash, compareBcryptHash } = require('security');
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
@@ -25,6 +25,14 @@ UserSchema.pre('save', async function (next) {
         next(error);
     }
 });
+
+UserSchema.methods.isValidPassword = async function (password) {
+    try {
+        return await compareBcryptHash(password, this.password);
+    } catch (error) {
+        throw error;
+    }
+}
 
 const User = mongoose.model('user', UserSchema);
 module.exports = User;
