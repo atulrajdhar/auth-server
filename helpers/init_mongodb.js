@@ -57,8 +57,8 @@ async function close () {
 }
 
 async function cleanup () {
-    if(process.env.DB_URI === "test") {
-        const collections = await mongoose.connection.collections;
+    if(process.env.NODE_ENV === "test") {
+        const collections = await mongoose.connection.db.listCollections().toArray();
             return Promise.all(
                 collections
                     .map(({name}) => name)

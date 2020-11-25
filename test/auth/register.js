@@ -29,7 +29,7 @@ describe('auth register', () => {
     });
 
     afterEach ( async () => {
-        await cleanup();
+        await cleanup();        
     });
 
     it('should verify all required inputs are specified', (done) => {
@@ -52,6 +52,7 @@ describe('auth register', () => {
         });
         done();       
     });
+
     it('should validate email', (done) => {
         let users = [
             {"email": null, "password": "abcdef"},
@@ -118,8 +119,23 @@ describe('auth register', () => {
                 body.should.be.a('object');
                 body.should.have.property('error').property('status').eq(res.status);
                 body.should.have.property('error').property('message');                
-            });       
+            });            
     });
-    it('should use bcryptjs to store password');
-    it('should register new user');
+    
+    it('should register user and return JWT access token', (done) => {
+        let user = {
+            "email": "abc@xyz.com",
+            "password": "abcdef"
+        };        
+        chai.request(app)
+            .post('/auth/register')
+            .send(user)
+            .end((err, res) => {
+                const body = res.body;                
+                res.should.have.status(200);
+                body.should.be.a('object');
+                body.should.have.property('accessToken');
+                done();
+            });        
+    });    
 });
