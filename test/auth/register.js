@@ -93,7 +93,7 @@ describe('auth register', () => {
                 body.should.be.a('object');
                 body.should.have.property('error').property('status').eq(res.status);
                 body.should.have.property('error').property('message');
-            }); 
+            });
         });
         done();
     });
