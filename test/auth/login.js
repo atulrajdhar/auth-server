@@ -117,43 +117,47 @@ describe('auth login', () => {
             });            
     });
 
-    it('should fail when password does not match', async () => {
+    it('should fail when password does not match', (done) => {
         let userData = {
             "email": "abc@xyz.com",
             "password": "abcdef"
         };
         const user = new User(userData);
-        await user.save();
-
-        userData.password = "abcdefg";        
-        chai.request(app)
+        user.save()
+            .then((req, res) => {
+                userData.password = "abcdefg";        
+                chai.request(app)
+                    .post('/auth/login')
+                    .send(userData)
+                    .end((err, res) => {
+                        const body = res.body;          
+                        res.should.have.status(401);
+                        body.should.be.a('object');
+                        body.should.have.property('error').property('status').eq(res.status);
+                        body.should.have.property('error').property('message').eq('Username/Password not valid');
+                        done();
+                });
+            });
+    });
+    
+    it('should login user and return JWT access token', (done) => {
+        let userData = {
+            "email": "abc@xyz.com",
+            "password": "abcdef"
+        };
+        const user = new User(userData);
+        user.save()
+            .then((req, res) => {
+                chai.request(app)
             .post('/auth/login')
             .send(userData)
             .end((err, res) => {
-                const body = res.body;
-                res.should.have.status(401);
+                const body = res.body;                
+                res.should.have.status(200);
                 body.should.be.a('object');
-                body.should.have.property('error').property('status').eq(res.status);
-                body.should.have.property('error').property('message');                
-            });            
-    });
-    
-    // it('should login user and return JWT access token', async (done) => {
-    //     let userData = {
-    //         "email": "abc@xyz.com",
-    //         "password": "abcdef"
-    //     };
-    //     const user = new User(userData);
-    //     await user.save();
-
-    //     chai.request(app)
-    //         .post('/auth/login')
-    //         .send(user)
-    //         .end((err, res) => {
-    //             const body = res.body;                
-    //             res.should.have.status(200);
-    //             body.should.be.a('object');
-    //             body.should.have.property('accessToken');
-    //         });        
-    // });    
+                body.should.have.property('accessToken');
+                done();
+            });
+        });
+    });    
 });

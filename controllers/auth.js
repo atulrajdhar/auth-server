@@ -37,7 +37,9 @@ module.exports = {
             if (!isMatch)
                 throw createError.Unauthorized("Username/Password not valid");
             
-            return res.send(result);
+            const accessToken = await signAccessToken(user.id);
+            return res.send({ accessToken });
+            
         } catch (error) {
             if(error.isJoi === true) {
                 return next(createError.BadRequest("Invalid Username/Password"));

@@ -21,7 +21,7 @@ app.use(async(req, res, next) => {
 
 app.use((err, req, res, next) => {
     const status = err.status || 500;
-    //console.error(err);
+    // console.error(err);
     res.status(status)
     res.send({
         error: {

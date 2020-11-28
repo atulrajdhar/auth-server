@@ -98,15 +98,15 @@ describe('auth register', () => {
         done();
     });
     
-    it('should fail when username already exists', async () => {
+    it('should fail when username already exists', (done) => {
         let userData = {
             "email": "abc@xyz.com",
             "password": "abcdef"
         };
         const user = new User(userData);
-        await user.save();
-
-        chai.request(app)
+        user.save()
+            .then((req, res) => {
+                chai.request(app)
             .post('/auth/register')
             .send(userData)
             .end((err, res) => {
@@ -114,8 +114,10 @@ describe('auth register', () => {
                 res.should.have.status(409);
                 body.should.be.a('object');
                 body.should.have.property('error').property('status').eq(res.status);
-                body.should.have.property('error').property('message');                
-            });            
+                body.should.have.property('error').property('message');
+                done();
+            });
+        });        
     });
     
     it('should register user and return JWT access token', (done) => {
