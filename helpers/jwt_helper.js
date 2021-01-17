@@ -6,6 +6,9 @@ const { generateJWTAccessToken, verifyJWTAccessToken } = require('security');
 
 module.exports = {
     signAccessToken: (userId) => {
+        if(!userId) {
+            throw new Error("userId should not be empty");
+        }
         const payload = {};
         const secret = process.env.ACCESS_TOKEN_SECRET;
         const options = {

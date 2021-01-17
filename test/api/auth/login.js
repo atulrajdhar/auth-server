@@ -5,17 +5,17 @@ require('dotenv').config();
 const chai = require('chai');
 const chaiHttp = require( 'chai-http');
 
-const { init_mongodb, close, cleanup } = require('../../helpers/init_mongodb');
+const { init_mongodb, close, cleanup } = require('../../../helpers/init_mongodb');
 
-const auth = require('../../controllers/auth');
-const User = require('../../models/user');
-const app = require('../../app');
+const auth = require('../../../controllers/auth');
+const User = require('../../../models/user');
+const app = require('../../../app');
 
 
 chai.should();
 chai.use(chaiHttp);
 
-describe('auth register', () => {    
+describe('auth login', () => {    
     before( async () => {
         await init_mongodb();
     });
@@ -36,14 +36,14 @@ describe('auth register', () => {
         ];
         users.forEach(user => {
             chai.request(app)
-            .post('/auth/register')
+            .post('/auth/login')
             .send(user)
             .end((err, res) => {
                 const body = res.body;                
-                res.should.have.status(422);
+                res.should.have.status(400);
                 body.should.be.a('object');
                 body.should.have.property('error').property('status').eq(res.status);
-                body.should.have.property('error').property('message');
+                body.should.have.property('error').property('message').eq('Invalid Username/Password');
             }); 
         });
         done();       
@@ -60,14 +60,14 @@ describe('auth register', () => {
         ];
         users.forEach(user => {
             chai.request(app)
-            .post('/auth/register')
+            .post('/auth/login')
             .send(user)
             .end((err, res) => {
                 const body = res.body;
-                res.should.have.status(422);
+                res.should.have.status(400);
                 body.should.be.a('object');
                 body.should.have.property('error').property('status').eq(res.status);
-                body.should.have.property('error').property('message');
+                body.should.have.property('error').property('message').eq('Invalid Username/Password');
             }); 
         });
         done();
@@ -85,20 +85,62 @@ describe('auth register', () => {
         ];
         users.forEach(user => {
             chai.request(app)
-            .post('/auth/register')
+            .post('/auth/login')
             .send(user)
             .end((err, res) => {
                 const body = res.body;                
-                res.should.have.status(422);
+                res.should.have.status(400);
                 body.should.be.a('object');
                 body.should.have.property('error').property('status').eq(res.status);
-                body.should.have.property('error').property('message');
-            });
+                body.should.have.property('error').property('message').eq('Invalid Username/Password');
+            }); 
         });
         done();
     });
     
-    it('should fail when username already exists', (done) => {
+    it('should fail when user does not exist', (done) => {
+        let userData = {
+            "email": "abc@xyz.com",
+            "password": "abcdef"
+        };        
+
+        chai.request(app)
+            .post('/auth/login')
+            .send(userData)
+            .end((err, res) => {
+                const body = res.body;
+                res.should.have.status(404);
+                body.should.be.a('object');
+                body.should.have.property('error').property('status').eq(res.status);
+                body.should.have.property('error').property('message').eq("User not registered");
+                done();
+            });            
+    });
+
+    it('should fail when password does not match', (done) => {
+        let userData = {
+            "email": "abc@xyz.com",
+            "password": "abcdef"
+        };
+        const user = new User(userData);
+        user.save()
+            .then((req, res) => {
+                userData.password = "abcdefg";        
+                chai.request(app)
+                    .post('/auth/login')
+                    .send(userData)
+                    .end((err, res) => {
+                        const body = res.body;          
+                        res.should.have.status(401);
+                        body.should.be.a('object');
+                        body.should.have.property('error').property('status').eq(res.status);
+                        body.should.have.property('error').property('message').eq('Username/Password not valid');
+                        done();
+                });
+            });
+    });
+    
+    it('should login user and return JWT access token', (done) => {
         let userData = {
             "email": "abc@xyz.com",
             "password": "abcdef"
@@ -107,33 +149,15 @@ describe('auth register', () => {
         user.save()
             .then((req, res) => {
                 chai.request(app)
-            .post('/auth/register')
+            .post('/auth/login')
             .send(userData)
-            .end((err, res) => {
-                const body = res.body;
-                res.should.have.status(409);
-                body.should.be.a('object');
-                body.should.have.property('error').property('status').eq(res.status);
-                body.should.have.property('error').property('message');
-                done();
-            });
-        });        
-    });
-    
-    it('should register user and return JWT access token', (done) => {
-        let user = {
-            "email": "abc@xyz.com",
-            "password": "abcdef"
-        };        
-        chai.request(app)
-            .post('/auth/register')
-            .send(user)
             .end((err, res) => {
                 const body = res.body;                
                 res.should.have.status(200);
                 body.should.be.a('object');
                 body.should.have.property('accessToken');
                 done();
-            });        
+            });
+        });
     });    
 });

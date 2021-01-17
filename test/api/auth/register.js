@@ -5,17 +5,17 @@ require('dotenv').config();
 const chai = require('chai');
 const chaiHttp = require( 'chai-http');
 
-const { init_mongodb, close, cleanup } = require('../../helpers/init_mongodb');
+const { init_mongodb, close, cleanup } = require('../../../helpers/init_mongodb');
 
-const auth = require('../../controllers/auth');
-const User = require('../../models/user');
-const app = require('../../app');
+const auth = require('../../../controllers/auth');
+const User = require('../../../models/user');
+const app = require('../../../app');
 
 
 chai.should();
 chai.use(chaiHttp);
 
-describe('auth login', () => {    
+describe('auth register', () => {    
     before( async () => {
         await init_mongodb();
     });
@@ -36,14 +36,14 @@ describe('auth login', () => {
         ];
         users.forEach(user => {
             chai.request(app)
-            .post('/auth/login')
+            .post('/auth/register')
             .send(user)
             .end((err, res) => {
                 const body = res.body;                
-                res.should.have.status(400);
+                res.should.have.status(422);
                 body.should.be.a('object');
                 body.should.have.property('error').property('status').eq(res.status);
-                body.should.have.property('error').property('message').eq('Invalid Username/Password');
+                body.should.have.property('error').property('message');
             }); 
         });
         done();       
@@ -60,14 +60,14 @@ describe('auth login', () => {
         ];
         users.forEach(user => {
             chai.request(app)
-            .post('/auth/login')
+            .post('/auth/register')
             .send(user)
             .end((err, res) => {
                 const body = res.body;
-                res.should.have.status(400);
+                res.should.have.status(422);
                 body.should.be.a('object');
                 body.should.have.property('error').property('status').eq(res.status);
-                body.should.have.property('error').property('message').eq('Invalid Username/Password');
+                body.should.have.property('error').property('message');
             }); 
         });
         done();
@@ -85,79 +85,55 @@ describe('auth login', () => {
         ];
         users.forEach(user => {
             chai.request(app)
-            .post('/auth/login')
+            .post('/auth/register')
             .send(user)
             .end((err, res) => {
                 const body = res.body;                
-                res.should.have.status(400);
+                res.should.have.status(422);
                 body.should.be.a('object');
                 body.should.have.property('error').property('status').eq(res.status);
-                body.should.have.property('error').property('message').eq('Invalid Username/Password');
-            }); 
+                body.should.have.property('error').property('message');
+            });
         });
         done();
     });
     
-    it('should fail when user does not exist', (done) => {
+    it('should fail when username already exists', (done) => {
         let userData = {
             "email": "abc@xyz.com",
             "password": "abcdef"
-        };        
-
-        chai.request(app)
-            .post('/auth/login')
+        };
+        const user = new User(userData);
+        user.save()
+            .then((req, res) => {
+                chai.request(app)
+            .post('/auth/register')
             .send(userData)
             .end((err, res) => {
                 const body = res.body;
-                res.should.have.status(404);
+                res.should.have.status(409);
                 body.should.be.a('object');
                 body.should.have.property('error').property('status').eq(res.status);
-                body.should.have.property('error').property('message').eq("User not registered");
+                body.should.have.property('error').property('message');
                 done();
-            });            
-    });
-
-    it('should fail when password does not match', (done) => {
-        let userData = {
-            "email": "abc@xyz.com",
-            "password": "abcdef"
-        };
-        const user = new User(userData);
-        user.save()
-            .then((req, res) => {
-                userData.password = "abcdefg";        
-                chai.request(app)
-                    .post('/auth/login')
-                    .send(userData)
-                    .end((err, res) => {
-                        const body = res.body;          
-                        res.should.have.status(401);
-                        body.should.be.a('object');
-                        body.should.have.property('error').property('status').eq(res.status);
-                        body.should.have.property('error').property('message').eq('Username/Password not valid');
-                        done();
-                });
             });
+        });        
     });
     
-    it('should login user and return JWT access token', (done) => {
-        let userData = {
+    it('should register user and return JWT access token', (done) => {
+        let user = {
             "email": "abc@xyz.com",
             "password": "abcdef"
-        };
-        const user = new User(userData);
-        user.save()
-            .then((req, res) => {
-                chai.request(app)
-            .post('/auth/login')
-            .send(userData)
+        };        
+        chai.request(app)
+            .post('/auth/register')
+            .send(user)
             .end((err, res) => {
                 const body = res.body;                
                 res.should.have.status(200);
                 body.should.be.a('object');
                 body.should.have.property('accessToken');
                 done();
-            });
-        });
+            });        
     });    
 });

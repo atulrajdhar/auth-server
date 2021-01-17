@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon server.js",
     "test": "mocha --recursive --exit --timeout 10000",
-    "test:login": "mocha ./controllers/auth.js ./test/auth/login.js --timeout 1000000"
+    "test:token": "mocha ./helpers/jwt_helper.js ./test/helpers/jwt_helper/signAccessToken.js --timeout 1000000"
   },
   "keywords": [
     "authroization",
