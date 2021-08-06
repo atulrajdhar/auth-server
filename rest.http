@@ -3,12 +3,12 @@ GET http://localhost:3000/
 
 ### register route
 POST http://localhost:3000/auth/register
-# Content-Type: application/json
+ Content-Type: application/json
 
-# {
-#     "email": "abc@xyz.com",
-#     "password": "abcde"
-# }
+ {
+     "email": "abc@xyz.com",
+     "password": "abcdef"
+ }
 
 ### login route
 POST http://localhost:3000/auth/login

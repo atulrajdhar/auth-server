@@ -44,6 +44,9 @@ module.exports = {
             if(error.isJoi === true) {
                 return next(createError.BadRequest("Invalid Username/Password"));
             }
+            else if(error.status >= 500) {
+                return next(createError.InternalServerError());
+            }
             next(error);
         }
     },
