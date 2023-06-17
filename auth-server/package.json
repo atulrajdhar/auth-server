@@ -1,0 +1,39 @@
+{
+  "name": "auth-server",
+  "version": "1.0.0",
+  "description": "authorization server for apps using jwt tokens",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "test": "mocha --recursive --exit --timeout 10000",
+    "test:token": "mocha ./helpers/jwt_helper.js ./test/helpers/jwt_helper/signAccessToken.js --timeout 1000000"
+  },
+  "keywords": [
+    "authroization",
+    "server",
+    "jwt",
+    "bcrypt"
+  ],
+  "author": "asr",
+  "license": "ISC",
+  "dependencies": {
+    "@hapi/joi": "^17.1.1",
+    "dotenv": "^8.2.0",
+    "dotenv-expand": "^5.1.0",
+    "express": "^4.17.1",
+    "http-errors": "^1.8.0",
+    "mongoose": "^5.10.15",
+    "morgan": "^1.10.0",
+    "redis": "^4.6.7",
+    "security": "file:../helpers/security",
+    "utils": "file:../utils"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "db-handler": "file:../db-handler",
+    "mocha": "^8.2.1",
+    "mongodb-memory-server-global": "^6.9.2",
+    "nodemon": "^2.0.6"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "db-handler",
+  "version": "1.0.0",
+  "description": "provides database initialization services for different nosql and sql databases",
+  "main": "index.js",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "mongodb-memory-server-global": "^6.9.2",
+    "mongoose": "^5.10.15"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "mongodb",
+    "mongodb-memory-server"
+  ],
+  "author": "asr",
+  "license": "ISC"
+}

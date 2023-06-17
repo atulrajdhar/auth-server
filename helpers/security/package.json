@@ -1,0 +1,34 @@
+{
+  "name": "security",
+  "version": "1.0.0",
+  "description": "provides methods to hash, encrypt and decrypt user data",
+  "main": "index.js",
+
+  "scripts": {
+    "test": "mocha --require babel-polyfill --require @babel/register --recursive --exit",
+    "test:verifyJWTToken": "mocha --require babel-polyfill --require @babel/register --watch ./test/jwt/verifyJWTAccessToken.js --watch ./src/jwt/verifyJWTAccessToken.js",
+    "build": "npm-run-all clean transpile",
+    "clean": "rimraf dist",
+    "transpile": "babel src --out-dir dist"
+  },
+  "author": "asr",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "http-errors": "^1.8.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.3",
+    "@babel/preset-env": "^7.12.1",
+    "@babel/register": "^7.12.1",
+    "babel-cli": "^6.26.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "mocha": "^8.2.1",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^3.0.2"
+  }
+}

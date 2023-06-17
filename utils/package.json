@@ -1,0 +1,16 @@
+{
+  "name": "utils",
+  "version": "1.0.0",
+  "description": "utility methods used in auth-server",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --recursive --exit"
+  },
+  "author": "asr",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^4.3.7",
+    "chai-as-promised": "^7.1.1",
+    "mocha": "^10.2.0"
+  }
+}

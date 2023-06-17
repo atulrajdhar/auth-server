@@ -1,0 +1,18 @@
+{
+  "name": "validators",
+  "version": "1.0.0",
+  "description": "provides methods to validate user data such as username, password and other user input data that are commonly used in different applications",
+  "scripts": {
+    "test": "mocha --require babel-polyfill --require @babel/register --recursive --exit"
+  },
+  "author": "asr",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.12.3",
+    "@babel/preset-env": "^7.12.1",
+    "@babel/register": "^7.12.1",
+    "babel-polyfill": "^6.26.0",
+    "chai": "^4.2.0",
+    "mocha": "^8.2.1"
+  }
+}
